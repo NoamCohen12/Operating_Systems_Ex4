@@ -1,0 +1,11 @@
+
+
+
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=memcheck_report.txt ./hello 564555 -e 10000 -v 10000 -s 0
+
+
+
+terminal A: valgrind --vgdb=yes --vgdb-error=0 ./hello hello world
+terminal B: gdb ./hello
+terminal B: target remote | vgdb .....(Valgrind process:)
+terminal B: continue

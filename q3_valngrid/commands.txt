@@ -1,0 +1,7 @@
+
+valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=memcheck_report2.txt ./main -e 10000 -v 10000 -s 0
+
+
+valgrind --tool=callgrind ./main -e 10000 -v 10000 -s 0
+
+

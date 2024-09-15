@@ -1,0 +1,1 @@
+valgrind --tool=helgrind ./race > race.report.txt 2>&1

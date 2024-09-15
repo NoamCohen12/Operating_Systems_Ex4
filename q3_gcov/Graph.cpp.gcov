@@ -1,0 +1,153 @@
+        -:    0:Source:Graph.cpp
+        -:    0:Graph:Graph.gcno
+        -:    0:Data:Graph.gcda
+        -:    0:Runs:4
+        -:    0:Source is newer than graph
+        -:    1:#include "Graph.hpp"
+        -:    2:
+        -:    3:
+        6:    4:Graph::Graph(int V, int E) : V(V), E(E) {
+        6:    5:    vec_list.resize(V);
+        6:    6:    in_degree.resize(V, 0);
+        6:    7:    out_degree.resize(V, 0);
+        6:    8:}
+        -:    9:
+   100014:   10:void Graph::addEdge(int u, int v) {
+   100014:   11:    vec_list[u - 1].push_back(v - 1);
+   100014:   12:    out_degree[u - 1]++;
+   100014:   13:    in_degree[v - 1]++;
+   100014:   14:    cout << "added edge from " << u << " to " << v << endl;
+   100014:   15:}
+        -:   16:
+       13:   17:void Graph::removeEdge(int u, int v) {
+       13:   18:    u = u - 1;
+       13:   19:    v = v - 1;
+       13:   20:    vec_list[u].remove(v);
+       13:   21:    out_degree[u]--;
+       13:   22:    in_degree[v]--;
+       13:   23:    cout << "removed edge from " << u + 1 << " to " << v + 1 << endl;
+       13:   24:}
+        -:   25:
+        6:   26:void Graph::printGraph() {
+   100022:   27:    for (int i = 0; i < V; i++) {
+   100016:   28:        cout << i + 1 << " -> ";
+   200030:   29:        for (auto it : vec_list[i]) {
+   100014:   30:            cout << it + 1 << " ";
+        -:   31:        }
+   100016:   32:        cout << endl;
+        -:   33:    }
+        6:   34:}
+        -:   35:
+        6:   36:bool Graph::isConnected() {
+        6:   37:    vector<bool> visited(V, false);
+        6:   38:    queue<int> q;
+        -:   39:
+        -:   40:    // Find a vertex with a non-zero degree
+        6:   41:    int start = -1;
+        9:   42:    for (int i = 0; i < V; ++i) {
+        8:   43:        if (!vec_list[i].empty()) {
+        5:   44:            start = i;
+        5:   45:            break;
+        -:   46:        }
+        -:   47:    }
+        -:   48:
+        -:   49:    // If no edges in the graph, it's trivially connected
+        6:   50:    if (start == -1) {
+        1:   51:        return true;
+        -:   52:    }
+        -:   53:
+        -:   54:    // BFS to check connectivity
+        5:   55:    q.push(start);
+        5:   56:    visited[start] = true;
+       22:   57:    while (!q.empty()) {
+       17:   58:        int u = q.front();
+       17:   59:        q.pop();
+       33:   60:        for (int v : vec_list[u]) {
+       16:   61:            if (!visited[v]) {
+       12:   62:                visited[v] = true;
+       12:   63:                q.push(v);
+        -:   64:            }
+        -:   65:        }
+        -:   66:    }
+        -:   67:
+        -:   68:    // Check if all vertices with non-zero degree are visited
+       22:   69:    for (int i = 0; i < V; ++i) {
+       18:   70:        if (!vec_list[i].empty() && !visited[i]) {
+        1:   71:            return false;
+        -:   72:        }
+        -:   73:    }
+        -:   74:
+        4:   75:    return true;
+        6:   76:}
+        -:   77:
+        6:   78:bool Graph::isEulerianCircuit() {
+        -:   79:    // Check if the graph is connected
+        6:   80:    if (!isConnected()) {
+        1:   81:        return false;
+        -:   82:    }
+        -:   83:    // Check the in-degree and out-degree conditions
+       19:   84:    for (int i = 0; i < V; ++i) {
+       15:   85:        if (in_degree[i] != out_degree[i]) {
+        1:   86:            return false;
+        -:   87:        }
+        -:   88:    }
+        4:   89:    return true;
+        -:   90:}
+        -:   91:
+        -:   92:
+        -:   93:/**
+        -:   94: * Find if there is an Euler Circuit in the graph, if so, return true and print the path
+        -:   95: * @param g Graph object
+        -:   96: * @param V Number of vertices
+        -:   97: * @param E Number of edges
+        -:   98: * @return true if there is an Euler Circuit, false otherwise
+        -:   99: */
+        6:  100:vector<int> find_Euler_Circuit(Graph &g, int V, int E) {
+        6:  101:    vector<int> euler_circuit;
+        -:  102:
+        6:  103:    if (!g.isEulerianCircuit()) {
+        2:  104:        cout << "There is no Euler circuit in the graph" << endl;
+        2:  105:        return euler_circuit;
+        -:  106:    }
+        -:  107:
+        4:  108:    cout << "There is an Euler circuit in the graph" << endl;
+        -:  109:
+        -:  110:    // Find a starting vertex
+        4:  111:    int start = 0;
+        6:  112:    for (int i = 0; i < V; ++i) {
+        5:  113:        if (!g.vec_list[i].empty()) {
+        3:  114:            start = i;
+        3:  115:            break;
+        -:  116:        }
+        -:  117:    }
+        -:  118:
+        -:  119:    // Use stack to store the current path in Eulerian circuit
+        4:  120:    stack<int> current_path;
+        4:  121:    current_path.push(start);
+        -:  122:
+       34:  123:    while (!current_path.empty()) {
+       30:  124:        int u = current_path.top();
+       30:  125:        if (!g.vec_list[u].empty()) {
+       13:  126:            int v = g.vec_list[u].back();
+       13:  127:            g.removeEdge(u + 1, v + 1);
+       13:  128:            current_path.push(v);
+        -:  129:        } else {
+       17:  130:            euler_circuit.push_back(u);
+       17:  131:            current_path.pop();
+        -:  132:        }
+        -:  133:    }
+        -:  134:
+        4:  135:    return euler_circuit;
+        4:  136:}
+        -:  137:
+        6:  138:void print_Euler_Circuit(const vector<int>& euler_circuit) {
+        6:  139:    if (euler_circuit.empty()) {
+        2:  140:        return;
+        -:  141:    }
+        -:  142:
+        4:  143:    cout << "The Euler circuit is: ";
+       21:  144:    for (auto it = euler_circuit.rbegin(); it != euler_circuit.rend(); ++it) {
+       17:  145:        cout << *it + 1 << " ";
+        -:  146:    }
+        4:  147:    cout << endl;
+        -:  148:}

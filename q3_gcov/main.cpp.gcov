@@ -1,0 +1,124 @@
+        -:    0:Source:main.cpp
+        -:    0:Graph:main.gcno
+        -:    0:Data:main.gcda
+        -:    0:Runs:4
+        -:    0:Source is newer than graph
+        -:    1:#include <unistd.h>  // For getopt
+        -:    2:
+        -:    3:#include <cstdlib>
+        -:    4:#include <ctime>
+        -:    5:#include <iostream>
+        -:    6:#include <string>
+        -:    7:
+        -:    8:#include "Graph.hpp"
+        -:    9:
+        1:   10:void generateRandomGraph(Graph &g, int V, int E, int from_user_seed = 0) {
+        1:   11:    srand(from_user_seed);
+   100001:   12:    for (int i = 0; i < E; i++) {
+   100000:   13:        int u = rand() % V + 1;
+   100000:   14:        int v = rand() % V + 1;
+   100000:   15:        g.addEdge(u, v);
+        -:   16:    }
+        1:   17:}
+        -:   18:
+        4:   19:int main(int argc, char **argv) {
+        4:   20:    if (argc < 7) {
+        1:   21:        std::cerr << "Usage: " << argv[0] << " -e <value> -v <value> -s <value>\n";
+        1:   22:        exit(EXIT_FAILURE);
+        -:   23:    }
+        3:   24:    int re_val_e = 0;
+        3:   25:    int re_val_v = 0;
+        3:   26:    int re_val_seed = time(0);  // Default seed with current time
+        -:   27:
+        -:   28:    int opt;
+       11:   29:    while ((opt = getopt(argc, argv, "v:e:s:")) != -1) {
+        9:   30:        switch (opt) {
+        3:   31:            case 'v':
+        3:   32:                re_val_v = std::stoi(optarg);
+        3:   33:                break;
+        3:   34:            case 'e':
+        3:   35:                re_val_e = std::stoi(optarg);
+        3:   36:                break;
+        2:   37:            case 's':  // Use 's' for seed
+        2:   38:                re_val_seed = std::stoi(optarg);
+        2:   39:                break;
+        1:   40:            default:
+        1:   41:                std::cerr << "Usage: " << argv[0] << " -e <value> -v <value> -s <value>\n";
+        1:   42:                exit(EXIT_FAILURE);
+        -:   43:        }
+        -:   44:    }
+        -:   45:
+        2:   46:    if (re_val_v < 0 || re_val_e < 0 || re_val_seed < 0) {
+        1:   47:        std::cerr << "Invalid input\n";
+        1:   48:        exit(EXIT_FAILURE);
+        -:   49:    }
+        -:   50:
+        1:   51:    srand(re_val_seed);  // Seed the random number generator
+        -:   52:
+        1:   53:    int V = re_val_v;
+        1:   54:    int E = re_val_e;
+        2:   55:    Graph g(V, E);
+        1:   56:    generateRandomGraph(g, V, E, re_val_seed);
+        1:   57:    g.printGraph();
+        2:   58:    vector<int> euler_circuit = find_Euler_Circuit(g, V, E);  // Assuming this function is defined elsewhere
+        1:   59:    print_Euler_Circuit(euler_circuit);
+        -:   60:
+        -:   61:    std::cout << "--------------------------------\n";
+        -:   62:
+        -:   63:    Graph g3(2, 2);  // 2 vertices, 2 edges
+        -:   64:    g3.addEdge(1, 2);
+        -:   65:    g3.addEdge(2, 1);
+        -:   66:    g3.printGraph();
+        -:   67:    vector<int> euler_circuit2 = find_Euler_Circuit(g3, 2, 2);
+        -:   68:    print_Euler_Circuit(euler_circuit2);
+        -:   69:
+        -:   70:    std::cout << "--------------------------------\n";
+        -:   71:    Graph g4(4, 4);  // 5 vertices, 4 edges
+        -:   72:    g4.addEdge(1, 2);
+        -:   73:    g4.addEdge(2, 3);
+        -:   74:    g4.addEdge(3, 4);
+        -:   75:    g4.addEdge(4, 1);
+        -:   76:    // Vertex 4 and 5 are isolated, making the graph disconnected
+        -:   77:    g4.printGraph();
+        -:   78:    vector<int> euler_circuit3 = find_Euler_Circuit(g4, 4, 4);  // This should trigger the isConnected check
+        -:   79:    print_Euler_Circuit(euler_circuit3);
+        -:   80:
+        -:   81:    std::cout << "--------------------------------\n";
+        -:   82:
+        -:   83:    Graph g5(6, 7);  // 6 vertices, 9 edges
+        -:   84:
+        -:   85:    // Adding edges that form an Eulerian circuit
+        -:   86:    g5.addEdge(1, 2);
+        -:   87:    g5.addEdge(6, 1);
+        -:   88:    g5.addEdge(2, 3);
+        -:   89:    g5.addEdge(3, 6);
+        -:   90:    g5.addEdge(3, 4);
+        -:   91:    g5.addEdge(4, 5);
+        -:   92:    g5.addEdge(5, 3);
+        -:   93:
+        -:   94:    g5.printGraph();
+        -:   95:
+        -:   96:    vector<int> euler_circuit5 = find_Euler_Circuit(g5, 6, 7);
+        -:   97:    print_Euler_Circuit(euler_circuit5);
+        -:   98:
+        -:   99:    std::cout << "--------------------------------\n";
+        -:  100:
+        -:  101:    Graph empty(2, 0);  // 6 vertices, 9 edges
+        -:  102:
+        -:  103:    empty.printGraph();
+        1:  104:
+        -:  105:    vector<int> euler_circuit6 = find_Euler_Circuit(empty, 2, 0);
+        2:  106:    print_Euler_Circuit(euler_circuit6);
+        1:  107:
+        1:  108:    std::cout << "--------------------------------\n";
+        1:  109:    Graph g8(2, 1);  // 6 vertices, 9 edges
+        2:  110:    g8.addEdge(1, 2);
+        1:  111:
+        -:  112:    g8.printGraph();
+        1:  113:
+        2:  114:    vector<int> euler_circuit8 = find_Euler_Circuit(g8, 2, 1);
+        1:  115:    print_Euler_Circuit(euler_circuit8);
+        1:  116:
+        1:  117:    std::cout << "--------------------------------\n";
+        1:  118:    return 0;
+        -:  119:}

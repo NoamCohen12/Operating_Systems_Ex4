@@ -1,0 +1,9 @@
+./main -e 100000 -v 100000 -s 0
+./main 
+./main -e 100000 -v -100000 -s 0
+./main -e 100000 -v -100000 -t 0
+
+gcov main.cpp
+gcov Graph.cpp
+
+

@@ -1,0 +1,4 @@
+gprof main gmon.out > analysis_main.txt
+
+
+./main -e 100000 -v 100000 -s 0
